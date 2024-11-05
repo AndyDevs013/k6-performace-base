@@ -1,0 +1,23 @@
+{
+  "name": "k6-performance-tests",
+  "version": "1.0.0",
+  "description": "A template repository for k6 performance testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "k6 run tests/script.js",
+    "lowLoad": "LOAD_OPTION=lowLoad k6 run tests/script.js",
+    "mediumLoad": "LOAD_OPTION=mediumLoad k6 run tests/script.js",
+    "highLoad": "LOAD_OPTION=highLoad k6 run tests/script.js"
+  },
+  "keywords": [
+    "k6",
+    "performance",
+    "load-testing",
+    "stress-testing"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "k6": "^0.0.0"
+  }
+}
