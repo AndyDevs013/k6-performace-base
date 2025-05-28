@@ -2,132 +2,119 @@
 
 This is a template repository for setting up performance and load testing with [k6](https://k6.io/). Use this project as a foundation for writing and running performance tests for your applications and services.
 
-## Table of Contents
+## Available Test Types
 
-- [Getting Started](#getting-started)
-- [Setup](#setup)
-- [Writing Tests](#writing-tests)
-- [Running Tests](#running-tests)
-- [Configuration](#configuration)
-- [Example Test](#example-test)
+1. **Low Load Test**: Gradual ramp-up to simulate normal traffic conditions
+   ```bash
+   npm run lowLoad
+   ```
 
----
+2. **Medium Load Test**: Moderate traffic simulation for 30 seconds
+   ```bash
+   npm run mediumLoad
+   ```
 
-## Getting Started
+3. **High Load Test**: High traffic simulation with 50 virtual users
+   ```bash
+   npm run highLoad
+   ```
 
-To get started with this template, you can clone the repository and set up your environment to run k6 tests. This project is configured to help you quickly write and execute load testing scripts using k6.
+4. **Stress Test**: Gradually increasing load to find breaking points
+   ```bash
+   npm run stress
+   ```
+
+5. **Spike Test**: Sudden surge of users to test system resilience
+   ```bash
+   npm run spike
+   ```
+
+6. **Soak Test**: Long-duration test to find memory leaks and performance degradation
+   ```bash
+   npm run soak
+   ```
 
 ## Setup
 
-1. **Clone the repository:**
-
+1. **Install k6:**
+   
+   macOS:
    ```bash
-   git clone https://github.com/your-username/k6-performance-tests.git
-   cd k6-performance-tests
+   brew install k6
    ```
+   
+   Windows:
+   ```bash
+   choco install k6
+   ```
+   
+   [Other installation methods](https://k6.io/docs/getting-started/installation/)
 
-2. **Install k6:**
-   You can install k6 globally or use it directly from your command line.
-
-   - **Using Homebrew (macOS)**
-     ```bash
-     brew install k6
-     ```
-   - **Using Chocolatey (Windows)**
-     ```bash
-     choco install k6
-     ```
-   - **Download from k6.io**
-     [Download and install k6](https://k6.io/docs/getting-started/installation/)
-
-3. **Install dependencies (if any):**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-## Writing Tests
-
-All test scripts should be placed in the `tests` directory. k6 uses JavaScript to define performance tests, which makes it easy to write and understand load testing scenarios.
-
-### Example Directory Structure
+## Project Structure
 
 ```
 k6-performance-tests/
 │
+├── loadTypes/
+│   ├── lowLoad.js      # Gradual ramp-up test
+│   ├── mediumLoad.js   # Moderate load test
+│   ├── highLoad.js     # High traffic test
+│   ├── stressTest.js   # System stress test
+│   ├── spikeTest.js    # Traffic spike test
+│   └── soakTest.js     # Long-duration test
+│
 ├── tests/
-│   ├── script.js
-│   └── example_test.js
+│   └── script.js       # Main test script
 │
 ├── package.json
 └── README.md
 ```
 
-## Running Tests
+## Usage in Other Projects
 
-You can run your k6 test scripts using the following npm scripts or k6 commands:
+1. Copy the `loadTypes` directory and `tests/script.js` to your project
+2. Add the npm scripts to your package.json:
+   ```json
+   {
+     "scripts": {
+       "lowLoad": "LOAD_OPTION=lowLoad k6 run tests/script.js",
+       "mediumLoad": "LOAD_OPTION=mediumLoad k6 run tests/script.js",
+       "highLoad": "LOAD_OPTION=highLoad k6 run tests/script.js",
+       "stress": "LOAD_OPTION=stressTest k6 run tests/script.js",
+       "spike": "LOAD_OPTION=spikeTest k6 run tests/script.js",
+       "soak": "LOAD_OPTION=soakTest k6 run tests/script.js"
+     }
+   }
+   ```
 
-- **Basic Test Run:**
+## Customizing Tests
 
-  ```bash
-  npm run test
-  ```
-
-  or
-
-  ```bash
-  k6 run tests/script.js
-  ```
-
-- **Run Test Against Staging Environment:**
-
-  ```bash
-  npm run test:staging
-  ```
-
-- **Run Test Against Production Environment:**
-  ```bash
-  npm run test:production
-  ```
-
-## Configuration
-
-You can configure environment-specific settings in your k6 scripts using `__ENV`. This allows you to pass environment variables into your test scenarios.
-
-Example:
+Modify the test scenarios in the `loadTypes` directory to match your requirements. Each file exports an `options` object that defines the test parameters:
 
 ```javascript
-import http from "k6/http";
-import { check } from "k6";
-
-export default function () {
-  const url =
-    __ENV.ENV === "staging"
-      ? "https://staging.example.com"
-      : "https://production.example.com";
-  const res = http.get(url);
-  check(res, { "status is 200": (r) => r.status === 200 });
-}
-```
-
-## Example Test
-
-Here's a simple k6 test script example:
-
-```javascript
-import http from "k6/http";
-import { check, sleep } from "k6";
-
 export const options = {
   stages: [
-    { duration: "30s", target: 10 }, // ramp-up to 10 users
-    { duration: "1m", target: 10 }, // hold at 10 users
-    { duration: "10s", target: 0 }, // ramp-down to 0 users
+    { duration: "30s", target: 20 },
+    { duration: "1m30s", target: 10 },
+    { duration: "20s", target: 0 },
   ],
 };
+```
 
-export default function () {
-  const res = http.get("https://test-api.example.com");
-  check(res, { "status was 200": (r) => r.status === 200 });
-  sleep(1);
-}
+## Metrics and Thresholds
+
+Add custom metrics and thresholds in your test scripts:
+
+```javascript
+export const options = {
+  thresholds: {
+    http_req_duration: ["p(95)<500"], // 95% of requests must complete below 500ms
+    http_req_failed: ["rate<0.01"],   // http errors should be less than 1%
+  },
+};
 ```

@@ -7,7 +7,10 @@
     "test": "k6 run tests/script.js",
     "lowLoad": "LOAD_OPTION=lowLoad k6 run tests/script.js",
     "mediumLoad": "LOAD_OPTION=mediumLoad k6 run tests/script.js",
-    "highLoad": "LOAD_OPTION=highLoad k6 run tests/script.js"
+    "highLoad": "LOAD_OPTION=highLoad k6 run tests/script.js",
+    "stress": "LOAD_OPTION=stressTest k6 run tests/script.js",
+    "spike": "LOAD_OPTION=spikeTest k6 run tests/script.js",
+    "soak": "LOAD_OPTION=soakTest k6 run tests/script.js"
   },
   "keywords": [
     "k6",
